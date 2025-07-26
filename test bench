@@ -1,0 +1,59 @@
+`timescale 1ns / 1ps 
+ 
+module RandomDice_tb; 
+ 
+    // Inputs 
+    reg clk; 
+    reg rst; 
+    reg roll; 
+ 
+    // Outputs 
+    wire [2:0] value; 
+ 
+    // Instantiate the Unit Under Test (UUT) 
+    RandomDice uut ( 
+        .clk(clk), 
+        .rst(rst), 
+        .roll(roll), 
+        .value(value) 
+    ); 
+ 
+    // Clock generation: 10 ns period 
+    always #5 clk = ~clk; 
+ 
+    initial begin 
+        // Set up waveform dump 
+        $dumpfile("randomdice_tb.vcd"); // Output VCD file 
+        $dumpvars(0, RandomDice_tb);    // Dump all variables 
+ 
+        // Initialize inputs 
+        clk = 0; 
+        rst = 1; 
+        roll = 0; 
+ 
+        // Apply reset 
+        #10; 
+        rst = 0; 
+ 
+        // Wait a bit 
+        #10; 
+ 
+        // Roll the dice 10 times 
+        repeat (10) begin 
+            roll = 1; 
+            #10; 
+            roll = 0; 
+            #20; 
+        end 
+ 
+        // Final wait before stopping 
+        #20; 
+        $finish; 
+    end 
+ 
+    // Monitor outputs to console 
+    initial begin 
+        $monitor("Time: %0dns | Roll: %b | Value: %d", $time, roll, value); 
+    end 
+ 
+endmodule
