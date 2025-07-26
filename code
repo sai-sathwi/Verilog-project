@@ -1,0 +1,31 @@
+    # futuristic and random 
+module dice ( 
+    input  clk,          // Clock signal 
+    input  rst,          // Reset signal 
+    input  roll,         // Trigger to roll the dice 
+    output reg [2:0] value  // Output value (1 to 6) 
+); 
+ 
+    reg [3:0] lfsr = 4'b1011;  // 4‑bit LFSR initialized 
+ 
+    always @(posedge clk or posedge rst) begin 
+        if (rst) begin 
+            lfsr  <= 4'b1011; 
+            value <= 1; 
+        end else if (roll) begin 
+            // LFSR update (x⁴ + x³ + 1 polynomial) 
+            lfsr <= {lfsr[2:0], lfsr[3] ^ lfsr[2]}; 
+ 
+            // Convert to range 1 to 6 
+            case (lfsr % 6) 
+                0: value <= 3'd1; 
+                1: value <= 3'd2; 
+                2: value <= 3'd3; 
+                3: value <= 3'd4; 
+                4: value <= 3'd5; 
+                5: value <= 3'd6; 
+            endcase 
+        end 
+    end 
+ 
+endmodule
